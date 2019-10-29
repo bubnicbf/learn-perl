@@ -31,8 +31,8 @@ while (1)
     # (6) read request msg until blank line, and print on screen
     while ($line = <C>)
     {
-		print $line;
-		if ($line =~ /^\r/) { last; }
+        print $line;
+        if ($line =~ /^\r/) { last; }
     }
 
     # (7) prompt for response message, and input response lines,
@@ -41,10 +41,10 @@ while (1)
 
     while ($line = <STDIN>)
     {
-	$line =~ s/\r//;
-	$line =~ s/\n//;
-	if ($line =~ /^\./) { last; }
-	print C $line . "\r\n";
+        $line =~ s/\r//;
+        $line =~ s/\n//;
+        if ($line =~ /^\./) { last; }
+        print C $line . "\r\n";
     }
 
     close(C);
