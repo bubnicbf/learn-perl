@@ -11,7 +11,7 @@ use strict;
 use warnings;
 use Getopt::Long;
 use File::Basename;
-use Smart::Comments;
+#use Smart::Comments;
 use File::Spec::Functions;
 use POSIX qw(strftime);
 use Cwd;
@@ -167,12 +167,12 @@ my ($all, $list);
 my $ret = GetOptions( 
     'l'         => \$list,
     'a'         => \$all,
-    'help'      => \&usage,
-    'version|V' => \&version
+  'help'      => \&usage,
+  'version|V' => \&version
 );
 
 if(! $ret) {
-    &usage();
+  &usage();
 }
 
 #------------------------------------------------------
@@ -187,6 +187,10 @@ foreach $myfile (@ARGV) {
     #$mytime = -M $myfile;
     #print "$mytime\n";
     ## $myfile
+  if($myfile eq '.') {
+    $myfile = getcwd();
+  }
+
     print "---------------------$myfile-----------------------\n";
     if(-e $myfile) {
         if(-d -x _) {
@@ -260,13 +264,13 @@ sub listdir {
             $right =~ s/7/rwx/g;
             ## $right
             $nlink = $info[3];
-            $uid   = $info[4];
-            $gid   = $info[5];
+            $uid   = getpwuid($info[4]); #from user id to user name.
+            $gid   = getgrgid($info[5]); #from group id to group name.
             $size  = $info[7];
             # the format of below: Sun Nov 11 14:18:02 2012
             # $ctime = strftime "%a %b %e %H:%M:%S %Y", localtime($info[10]);
             $ctime = strftime "%b %e %H:%M %Y", localtime($info[10]);
-            printf "%1s%9s %3d %4d %4d %8d %12s", $type, $right, $nlink, $uid, $gid, $size, $ctime;
+            printf "%1s%9s %3d %8s %8s %8d %12s", $type, $right, $nlink, $uid, $gid, $size, $ctime;
             #printf "%-2d %-4d %-4d %-8d", $nlink, $uid, $gid, $size;
             if(-d $file) {
                 print color("blue");
@@ -308,21 +312,21 @@ sub listdir {
 
 # function for signal action
 sub catch_int {
-    my $signame = shift;
-    print color("red"), "Stoped by SIG$signame\n", color("reset");
-    exit;
+  my $signame = shift;
+  print color("red"), "Stoped by SIG$signame\n", color("reset");
+  exit;
 }
 $SIG{INT} = __PACKAGE__ . "::catch_int";
 $SIG{INT} = \&catch_int; # best strategy
 
 sub usage {
-    print $usage;
-    exit;
+  print $usage;
+  exit;
 }
 
 sub version {
-    print "$script version $myversion\n";
-    exit;
+  print "$script version $myversion\n";
+  exit;
 }
 
 ## $myfile
